@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: check if the requesting user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: check if the user owns the document path
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper: validate note size (< 1 MiB)
+    function isValidNote() {
+      let size = request.resource.data.size();
+      return size < 1024 * 1024;
+    }
+
+    // Users can only read/write their own notes
+    match /users/{userId}/notes/{noteId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidNote();
+      allow update: if isOwner(userId) && isValidNote();
+      allow delete: if isOwner(userId);
+
+      // Validate fields on create/update
+      allow create, update: if
+        request.resource.data.keys().hasAll(['title', 'content', 'createdAt', 'updatedAt']) &&
+        request.resource.data.title is string &&
+        request.resource.data.content is string &&
+        request.resource.data.title.size() < 500;
+    }
+
+    // Shared notes (read-only public links)
+    match /shared/{shareId} {
+      allow read: if true;
+      allow create, update, delete: if false;
+    }
+  }
+}

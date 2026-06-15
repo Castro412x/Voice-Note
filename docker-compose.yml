@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  firebase-emulators:
+    image: firebaseemulators/firebase-emulators:latest
+    ports:
+      - "9099:9099"   # Auth
+      - "5001:5001"   # Functions
+      - "8080:8080"   # Firestore
+      - "9199:9199"   # Storage
+      - "4000:4000"   # Emulator UI
+    volumes:
+      - ./firebase:/opt/workspace/firebase
+    environment:
+      - FIREBASE_PROJECT=voice-note-dev
+    working_dir: /opt/workspace
+    command: >
+      firebase emulators:start
+      --project voice-note-dev
+      --only auth,functions,firestore,storage
+      --import ./firebase/seed
