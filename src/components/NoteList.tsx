@@ -22,6 +22,8 @@ export function NoteList() {
     const note = await createNote();
     if (note) {
       router.push(`/note?id=${note.id}`);
+    } else {
+      toast.error('Failed to create note. Check console for details.');
     }
     setCreating(false);
   };
