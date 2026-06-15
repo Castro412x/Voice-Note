@@ -5,12 +5,14 @@ import { useSearch } from '@/hooks/useSearch';
 import { NoteCard } from './NoteCard';
 import { SearchBar } from './SearchBar';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthButtons } from './AuthButtons';
 
 export function NoteList() {
   const { user } = useAuth();
+  const router = useRouter();
   const { notes, loading, error, createNote, deleteNote, showCountWarning, totalCount } = useNotes();
   const { query, setQuery, filteredNotes, isSearching, clearFilters } = useSearch(notes);
   const [creating, setCreating] = useState(false);
@@ -19,7 +21,7 @@ export function NoteList() {
     setCreating(true);
     const note = await createNote();
     if (note) {
-      toast.success('Note created');
+      router.push(`/note?id=${note.id}`);
     }
     setCreating(false);
   };
