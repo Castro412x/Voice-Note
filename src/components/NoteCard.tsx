@@ -28,7 +28,7 @@ export function NoteCard({ note, onDelete }: NoteCardProps) {
 
   return (
     <div
-      onClick={() => router.push(`/notes/${note.id}`)}
+      onClick={() => router.push(`/note?id=${note.id}`)}
       className="group cursor-pointer rounded-xl border border-gray-700/50 bg-gray-800/50 p-4 transition-all hover:border-gray-600 hover:bg-gray-800"
     >
       <div className="flex items-start justify-between gap-4">

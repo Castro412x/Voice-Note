@@ -1,25 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotes } from '@/hooks/useNotes';
 import { useAuth } from '@/hooks/useAuth';
 import { NoteEditor } from '@/components/NoteEditor';
 import { Note } from '@/types';
 
-export default function NotePage() {
-  const params = useParams();
+function NoteContent() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
   const { getNote, updateNote, deleteNote } = useNotes();
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const noteId = params.id as string;
+  const noteId = searchParams.get('id');
 
   useEffect(() => {
     if (!user) {
       router.push('/');
+      return;
+    }
+
+    if (!noteId) {
+      setError('No note specified');
+      setLoading(false);
       return;
     }
 
@@ -83,5 +89,17 @@ export default function NotePage() {
       onSave={handleSave}
       onDelete={handleDelete}
     />
+  );
+}
+
+export default function NotePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-1 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
+      </div>
+    }>
+      <NoteContent />
+    </Suspense>
   );
 }
