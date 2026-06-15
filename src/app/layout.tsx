@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Providers } from '@/components/providers';
 import { UserMenu } from '@/components/UserMenu';
 import { OfflineBanner } from '@/components/OfflineBanner';
+import { FloatingMic } from '@/components/FloatingMic';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ export default function RootLayout({
           <main className="flex flex-1 flex-col overflow-hidden">
             {children}
           </main>
+          <FloatingMic />
         </Providers>
       </body>
     </html>
